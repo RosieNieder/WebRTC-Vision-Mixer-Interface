@@ -1,102 +1,122 @@
+// handle obtaining permission from user
+// populate menus with currently attached devices
+// repopulate menus when device change is detected
+// return user selections to main programme
+
 export class DeviceManager {
-	constructor({videoInputSelect, audioInputSelect, commsInputSelect, monitorAudioOutputSelect, commsAudioOutputSelect}) {
-			this.videoInputSelect = videoInputSelect;
-			this.audioInputSelect = audioInputSelect;
-			this.commsInputSelect = commsInputSelect;
-			this.monitorAudioOutputSelect = monitorAudioOutputSelect;
-			this.commsAudioOutputSelect = commsAudioOutputSelect;
+	constructor() {
+		this.devicePermissions = false;
+		this.devices = null;
+		this.menuElements = []; // Array of objects: {selectElement, deviceKind, currentSelection}
 	}
 
 	async init() {
-		//get permission for microphone and camera usage
+		await this.getPermissions();
+		await this.getDevices();
+	}
+	
+	//obtains user permissions
+	async getPermissions() {
 		try {
 			await navigator.mediaDevices.getUserMedia({audio: true, video: true});
 			console.log("User permission granted");
-			this.populateDeviceMenus();
+			this.devicePermissions = true;
 		}
 		catch (err) {
 			console.error(err);
 		}
 	}
-	
-	async populateDeviceMenus() {
-		const devices = await navigator.mediaDevices.enumerateDevices();
-		this.clearDeviceMenus();
 
-		devices.forEach(device => {
+	//gets list of currenlty connected devices
+	async getDevices() {
+		if(this.devicePermissions === true)
+		{
+			this.devices = await navigator.mediaDevices.enumerateDevices();
+		} else {
+			console.warn("User permissions not granted, please reset permissions and reload page.")
+		}
+	}
+
+	//adds a menu to the menuElements array
+	addMenu(selectElement, deviceKind, streamId) {
+		const item = {
+			menuName: selectElement, 
+			deviceType: deviceKind, 
+			streamId: streamId,
+		}; 
+		let exists = false;
+
+		//check if there are any menus in the array
+		if(this.menuElements.length !== 0) {
+			this.menuElements.forEach(menu => {
+				if (item.menuName === menu.menuName) {
+					console.log("Menu already exists");
+					exists = true;
+				}
+			})
+			if (!exists) {
+				this.menuElements.push(item);
+			console.log("New Menu Detected: Adding New Menu")
+			}
+		} else {
+			this.menuElements.push(item);
+			console.log("No menus added yet, therefore Adding New Menu")
+		}
+		console.log(this.menuElements);
+		this.populateMenu(selectElement, deviceKind);
+}
+
+	//populates the menu with the currently connected devices
+	populateMenu(selectElement, deviceKind) {
+		//clear menu before populating if it exists
+		if (selectElement.length > 0) {
+			while (selectElement.firstChild) {
+				selectElement.removeChild(selectElement.firstChild);
+			}
+		}
+		this.devices.forEach(device => {
 			const option = document.createElement('option');
 			option.value = device.deviceId;
 			option.text = device.label;
 
-			switch (device.kind) {
-
-			case 'videoinput':
-				this.videoInputSelect.appendChild(option);
-				this.videoInputSelect.selectedIndex = 0;
-				break;
-			case 'audioinput':
-				this.audioInputSelect.appendChild(option);
-				this.commsInputSelect.appendChild(option.cloneNode(true));
-				this.audioInputSelect.selectedIndex = 0;
-				this.commsInputSelect.selectedIndex = 0;
-				break;
-			case 'audiooutput':
-				this.commsAudioOutputSelect.appendChild(option);
-				this.monitorAudioOutputSelect.appendChild(option.cloneNode(true));
-				this.commsAudioOutputSelect.selectedIndex = 0;
-				this.monitorAudioOutputSelect.selectedIndex = 0;
-				break;
+			if (device.kind === deviceKind) {
+				selectElement.appendChild(option);
+				selectElement.selectedIndex = 0;
 			}
-			
 		});
-		console.log("Populated device menus");
+		
 	}
 
-	//gets currently selected values for stream contraints
-	getPgmStreamConstraints() {
-		const pgmVideoInput = this.videoInputSelect.value;
-		const pgmAudioInput = this.audioInputSelect.value;
+	//iterates over the menuElements array and repopulates the menus
+	updateMenus() {
+		this.menuElements.forEach(menu => {
+			console.log(menu);
+			this.populateMenu(menu.menuName, menu.deviceType);
+		})
+	}
 
-		return {
-			video: {deviceId: pgmVideoInput ? {exact: pgmVideoInput} : undefined},
-			audio: {deviceId: pgmAudioInput ? {exact: pgmAudioInput} : undefined}}
-		}
+	//call on device change event to update menus with currently connected devices
+	async handleAttachedDeviceChange() {
+		console.log("Detected change in available devices")
+		//get updated device list
+		await this.getDevices();
+		this.updateMenus();
+		// this.getUpdatedSelection();
+	}
 	
-	getCommsStreamConstraints() {
-		const commsAudioInput = this.commsInputSelect.value;
-		const commsAudioOutput = this.commsAudioOutputSelect.value;
-		const monitorAudioOutput = this.monitorAudioOutputSelect.value;
-		return {
-			audio: {deviceId: commsAudioInput ? {exact: commsAudioInput} : undefined},
-		}
+	getSelectedDevices(streamId) {
+		const selectedDevices = [];
+		this.menuElements.forEach(menu => {
+			if (menu.streamId !== streamId) {
+				return;
+			} else {
+				selectedDevices.push({deviceId: menu.menuName.value, deviceKind: menu.deviceType});
+			}
+		})
+		return selectedDevices;
 	}
 
-	getAudioMonitoringConfiguration() {
-		const commsAudioOutput = this.commsAudioOutputSelect.value;
-		const monitorAudioOutput = this.monitorAudioOutputSelect.value;
-		return {
-			commsAudioOutput: commsAudioOutput,
-			monitorAudioOutput: monitorAudioOutput
-		}
-	}
 
-	//iterates over the device menus and removes all children
-	clearDeviceMenus() {
-		while (this.videoInputSelect.firstChild) {
-			this.videoInputSelect.removeChild(this.videoInputSelect.firstChild);
-		}
-		while (this.audioInputSelect.firstChild) {
-			this.audioInputSelect.removeChild(this.audioInputSelect.firstChild);
-		}
-		while (this.commsInputSelect.firstChild) {
-			this.commsInputSelect.removeChild(this.commsInputSelect.firstChild);
-		}
-		while (this.monitorAudioOutputSelect.firstChild) {
-			this.monitorAudioOutputSelect.removeChild(this.monitorAudioOutputSelect.firstChild);
-		}
-		while (this.commsAudioOutputSelect.firstChild) {
-			this.commsAudioOutputSelect.removeChild(this.commsAudioOutputSelect.firstChild);
-		}
-		console.log("Cleared device menus")
-	}
+
 }
+

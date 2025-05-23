@@ -8,7 +8,6 @@ Monitor outgoing progamme video and audio levels, as well as outgoing comms leve
 Output incoming comms audio via separate interface - i.e. interface to be used by OB to integrate into comms architecture
 
 */
-
 //import modules
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import {AudioMixer} from '../Modules/AudioMixer.js';
@@ -17,7 +16,8 @@ import { MediaManager } from  '../Modules/MediaManager.js';
 // <---------------------------------- Initialisation ----------------------------------->
 
 const deviceManager = new DeviceManager(
-	{videoInputSelect: document.getElementById("pgm-video-selection"),
+	{
+	videoInputSelect: document.getElementById("pgm-video-selection"),
 	audioInputSelect: document.getElementById("pgm-audio-selection"),
 	commsInputSelect: document.getElementById("comms-input-selection"),
 	commsAudioOutputSelect: document.getElementById("comms-output-selection"),
