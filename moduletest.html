@@ -8,14 +8,28 @@
 </head>
 <body class="local">
     <div class="container">
+
+        <label for="wsAddress">WebSocket Server Address:</label>
+<input type="text" id="wsAddress" placeholder="192.168.0.102:3200">
+<button id="connectBtn">Connect</button>
+<p id="connectionStatus"></p>
     <select id="multiview-video-input"></select>    
-        <video id = 'videoMon' autoplay></video>
+        <video id = 'videoMon' autoplay muted></video>
+        <audio id = "audioMon" controls></audio>
+        <label for="audioMon">Audio Monitor</label>
+        <audio id = "localCommsAudioMon" controls></audio>
+        <label for="localCommsAudioMon">Local Comms Audio Monitor</label>
+        <audio id = "remoteCommsAudioMon" controls></audio>
+        <label for="remoteCommsAudioMon">Remote Comms Audio Monitor</label>
+        
      
         <select id="multiview-audio-input"></select>   
         <select id="comms-audio-input"></select>   
         <select id="monitor-audio-output"></select>
         <select id ="comms-audio-output"></select>
-        <button id="GetDeviceSelection">Get Device Selection</button>
+        <button id="GetPgmDeviceSelection">Update Programme Inputs</button>
+        <button id="GetCommsSelection">Update Comms Input</button>
         <button id="start-programme-stream">Start Multiview Stream</button>
+        <button id="initialise-user">Send User To Server</button>
 <script type = "module" src="moduletest.js"></script>
 </body>

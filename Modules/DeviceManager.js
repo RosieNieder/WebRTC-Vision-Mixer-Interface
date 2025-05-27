@@ -1,13 +1,16 @@
-// handle obtaining permission from user
+// handle obtaining permission from user upon initialisation
 // populate menus with currently attached devices
 // repopulate menus when device change is detected
 // return user selections to main programme
+
+
+
 
 export class DeviceManager {
 	constructor() {
 		this.devicePermissions = false;
 		this.devices = null;
-		this.menuElements = []; // Array of objects: {selectElement, deviceKind, currentSelection}
+		this.menuElements = []; // Array of objects: {selectElement, deviceKind, streamId)
 	}
 
 	async init() {
@@ -25,8 +28,8 @@ export class DeviceManager {
 		catch (err) {
 			console.error(err);
 		}
+	
 	}
-
 	//gets list of currenlty connected devices
 	async getDevices() {
 		if(this.devicePermissions === true)
@@ -38,11 +41,11 @@ export class DeviceManager {
 	}
 
 	//adds a menu to the menuElements array
-	addMenu(selectElement, deviceKind, streamId) {
+	addMenu(selectElement, deviceKind, streamId){ //HTML select element, device kind (audioinput, videoinput, audiooutput), streamId (programme, comms, monitor)
 		const item = {
 			menuName: selectElement, 
 			deviceType: deviceKind, 
-			streamId: streamId,
+			streamId: streamId
 		}; 
 		let exists = false;
 
@@ -77,14 +80,13 @@ export class DeviceManager {
 		this.devices.forEach(device => {
 			const option = document.createElement('option');
 			option.value = device.deviceId;
-			option.text = device.label;
+			option.text = device.label
 
 			if (device.kind === deviceKind) {
 				selectElement.appendChild(option);
 				selectElement.selectedIndex = 0;
 			}
 		});
-		
 	}
 
 	//iterates over the menuElements array and repopulates the menus
@@ -103,20 +105,27 @@ export class DeviceManager {
 		this.updateMenus();
 		// this.getUpdatedSelection();
 	}
+
+	getStreamConstraints(streamId) {
+		const constraints = { audio: false, video: false };
 	
-	getSelectedDevices(streamId) {
-		const selectedDevices = [];
 		this.menuElements.forEach(menu => {
-			if (menu.streamId !== streamId) {
-				return;
-			} else {
-				selectedDevices.push({deviceId: menu.menuName.value, deviceKind: menu.deviceType});
+			if (menu.streamId !== streamId) return;
+	
+			const selectedDeviceId = menu.menuName.value;
+			const deviceType = menu.deviceType;
+	
+			if (deviceType === 'videoinput') {
+				constraints.video = { deviceId: { exact: selectedDeviceId } };
+			} else if (deviceType === 'audioinput') {
+				constraints.audio = { deviceId: { exact: selectedDeviceId } };
 			}
-		})
-		return selectedDevices;
+		});
+	
+		return constraints;
 	}
 
-
+	
 
 }
 
