@@ -1,3 +1,8 @@
+//TODO: Handling of ICE candidates
+
+
+
+
 export class SignallingManager {
     constructor(peerConn, socketUrl, operator) {
         this.peerConn = peerConn;

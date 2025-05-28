@@ -16,18 +16,11 @@ Programme flow:
 5. Start stream
 
 6. Send offer
-
-
 */
-
-
 
 import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
-
-
-
 
 // const webSocket = new WebSocket("ws://localhost:3200");
 let operator = "vision-mixer";
@@ -67,7 +60,6 @@ async function init() {
 
 await init();
 
-
 //add menus to device manager
 deviceManager.addMenu(videoMenu, 'videoinput', 'programme');
 deviceManager.addMenu(audioMenu, 'audioinput', 'programme');
@@ -81,8 +73,10 @@ navigator.mediaDevices.ondevicechange = (event) => {
 
 const pgmDeviceSelectButton = document.getElementById("GetPgmDeviceSelection");
 const commsDeviceSelectButton = document.getElementById("GetCommsSelection");
-const startStreamButton = document.getElementById("start-programme-stream");
+const startPgmStreamButton = document.getElementById("start-programme-stream");
+const startCommsStreamButton = document.getElementById("start-comms-stream")
 const sendUserButton = document.getElementById('initialise-user');
+const inpectButton = document.getElementById("Inspect");
 
 
 //event listeners for user selection change
@@ -142,30 +136,32 @@ sendUserButton.onclick = () => {
     signallingManager.sendUser();
 }
 
-startStreamButton.onclick = () => {
+startPgmStreamButton.onclick = () => {
     console.log(peerConn);
     console.log("Stream Button Clicked");  
-    streamManager.addStreamToPeerConnection('programme', peerConn);
-    
-    // console.log("Starting programme stream");
-    
-    // pgmStream.getTracks().forEach(track => {
-    //     peerConn.addTrack(track, pgmStream);
-    // });
-    // console.log("Peer connection: ", peerConn.getSenders());
-
-    // if (commsStream != undefined) {
-    //     commsStream.getTracks().forEach(track => track.stop());
-    // }
-    // commsStream.getTracks().forEach(track => { 
-    //     peerConn.addTrack(track, commsStream);
-    // }
-    // );
-    // console.log("Comms stream added to peer connection");
-    // console.log("Peer connection: ", peerConn.getSenders());
-
+    streamManager.attachStreamToPeerConnection('programme', peerConn);
+    console.log(peerConn.getSenders());
+    signallingManager.createAndSendOffer();
+};
+startCommsStreamButton.onclick = () => {
+    // console.log(peerConn);
+    console.log("Comms stream Button Clicked");  
+    streamManager.attachStreamToPeerConnection('comms', peerConn);
+    console.log(peerConn.getSenders());
     // signallingManager.createAndSendOffer();
 };
 
 signallingManager.handleIceCandidates();
 
+
+inpectButton.onclick = () => {
+    inspection();
+}
+function inspection(){
+    console.warn("STARTING INSPECTION");
+    console.log("peer connection senders: ", peerConn.getSenders());
+    console.log("programme constraints: ", pgmStreamConstraints);
+    console.log("comms constraints: ", commsStreamConstraints);
+    console.log("programme stream: ", streamManager.streams['programme']);
+    console.log("comms stream: ", streamManager.streams['comms']);
+}

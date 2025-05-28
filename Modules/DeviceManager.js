@@ -53,19 +53,19 @@ export class DeviceManager {
 		if(this.menuElements.length !== 0) {
 			this.menuElements.forEach(menu => {
 				if (item.menuName === menu.menuName) {
-					console.log("Menu already exists");
+					// console.log("Menu already exists");
 					exists = true;
 				}
 			})
 			if (!exists) {
 				this.menuElements.push(item);
-			console.log("New Menu Detected: Adding New Menu")
+			// console.log("New Menu Detected: Adding New Menu")
 			}
 		} else {
 			this.menuElements.push(item);
-			console.log("No menus added yet, therefore Adding New Menu")
+			// console.log("No menus added yet, therefore Adding New Menu")
 		}
-		console.log(this.menuElements);
+		// console.log(this.menuElements);
 		this.populateMenu(selectElement, deviceKind);
 }
 
@@ -92,7 +92,7 @@ export class DeviceManager {
 	//iterates over the menuElements array and repopulates the menus
 	updateMenus() {
 		this.menuElements.forEach(menu => {
-			console.log(menu);
+			// console.log(menu);
 			this.populateMenu(menu.menuName, menu.deviceType);
 		})
 	}

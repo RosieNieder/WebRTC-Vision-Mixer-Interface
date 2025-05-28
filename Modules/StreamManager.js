@@ -1,11 +1,9 @@
 // takes in a peer connection and a list of streams and their configurations (i.e. audio and video reqs)
-// 
-
-
 
 export class StreamManager {
     constructor() {
         this.streams = {};
+        this.streamSenders = {};
     }
 
     async createStream(streamId, constraints) {
@@ -37,16 +35,44 @@ export class StreamManager {
         return this.streams[streamId] || null;
     }
 
-    addStreamToPeerConnection(streamId, peerConn) {
-        const stream = this.getStream(streamId);
-        if (stream) {
+
+
+    //TODO: THIS DOESN'T WORK AT ALL!
+    attachStreamToPeerConnection(streamId, peerConn){
+        //check is stream is already attached
+        let exists = false;
+        peerConn.getSenders().forEach(sender => {
+            
+            if(this.getStreamIdFromSender(sender) === streamId) {
+                console.log("Stream Exists");
+                exists = true;
+                 //execute code to update stream rather than start stream
+            } else {
+                exists = false;
+            }
+           
+        })
+
+        if (exists === false) {
+            const currentSenders = this.streamSenders || [];
+            //get stream
+            const stream = this.getStream(streamId);
+            //attach stream
             stream.getTracks().forEach(track => {
-                peerConn.addTrack(track, stream);
-                
-            });
-            console.log(peerConn);
+                const sender = peerConn.addTrack(track);
+                sender._streamId = streamId; //tag stream with it's ID
+                currentSenders[streamId] = peerConn.getSenders();
+                console.log(currentSenders);
+            })
         }
+        else {
+            peerConn.getSenders().forEach(sender =>{
+
+            })
+        }
+    
     }
+    
 
     routeStreamToElement(streamId, element) {
         if (this.streams[streamId]) {
@@ -55,5 +81,8 @@ export class StreamManager {
         }
     }
 
-    
-}
+
+    getStreamIdFromSender(sender) {
+        return sender._streamId || null;
+    }
+    }
