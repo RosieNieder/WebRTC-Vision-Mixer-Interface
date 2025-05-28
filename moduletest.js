@@ -1,10 +1,36 @@
-import { MediaManager } from '../Modules/MediaManager.js';
+/* check browser supports WebRTC
+
+if (!navigator.mediaDevices || !window.RTCPeerConnection) {
+  alert("Your browser doesn't support WebRTC.");
+}
+
+Programme flow:
+1. Ask for user input (server address)
+
+2. Connect to WebSocket
+
+3. Get device permissions
+
+4. Populate menus
+
+5. Start stream
+
+6. Send offer
+
+
+*/
+
+
+
+import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
 
-// const webSocket = new WebSocket("ws://localhost:3200");
 
+
+// const webSocket = new WebSocket("ws://localhost:3200");
+let operator = "vision-mixer";
 //get html UI elements
 const videoMenu = document.getElementById("multiview-video-input");
 const audioMenu = document.getElementById("multiview-audio-input");
@@ -21,8 +47,8 @@ const remoteCommsAudioMon = document.getElementById("remoteCommsAudioMon");
 const peerConn = new RTCPeerConnection();
 
 const deviceManager = new DeviceManager;
-// const mediaManager = new MediaManager(peerConn);
-const signallingManager = new SignallingManager(peerConn, 'ws://192.168.0.102:3200');
+const streamManager = new StreamManager;
+const signallingManager = new SignallingManager(peerConn, 'ws://192.168.0.102:3200', operator);
 
 //define streams
 let pgmStream, commsStream;
@@ -89,34 +115,26 @@ commsOutputMenu.onchange = () => {
 //event listeners for buttons
 pgmDeviceSelectButton.onclick = () => {
     pgmStreamConstraints = deviceManager.getStreamConstraints('programme');
-    console.log("Programme stream constraints: ", pgmStreamConstraints);
+    // console.log("Programme stream constraints: ", pgmStreamConstraints);
 
-   
-    navigator.mediaDevices.getUserMedia(pgmStreamConstraints)
-        .then(stream => {
-            pgmStream = stream;
-            videoMon.srcObject = pgmStream; 
-            audioMon.srcObject = pgmStream;
-            console.log("Programme stream started");
-        })
-        .catch(err => {
-            console.error("Error starting programme stream: ", err);
-        });
+    streamManager.createStream('programme', pgmStreamConstraints)
+    .then(() => {
+        streamManager.routeStreamToElement('programme', videoMon);
+        streamManager.routeStreamToElement('programme', audioMon);
+    }).catch (err => {
+        console.error("Failed to create and attach stream to monitors: ", err);
+    })
 }
 
 commsDeviceSelectButton.onclick = () => {
     commsStreamConstraints = deviceManager.getStreamConstraints('comms');
-    console.log("Comms stream constraints: ", commsStreamConstraints);
-    
-    navigator.mediaDevices.getUserMedia(commsStreamConstraints)
-        .then(stream => {
-            commsStream = stream;
-            localCommsAudioMon.srcObject = commsStream;
-            console.log("Comms stream started");
-        })
-        .catch(err => {
-            console.error("Error starting comms stream: ", err);
-        });
+    // console.log("Comms stream constraints: ", commsStreamConstraints);
+    streamManager.createStream('comms', commsStreamConstraints)
+    .then(() => {
+        streamManager.routeStreamToElement('comms', localCommsAudioMon);
+    }).catch (err => {
+        console.error("Failed to create and attach stream to monitors: ", err);
+    })
 }
 
 sendUserButton.onclick = () => {
@@ -125,24 +143,28 @@ sendUserButton.onclick = () => {
 }
 
 startStreamButton.onclick = () => {
-    console.log("Starting programme stream");
+    console.log(peerConn);
+    console.log("Stream Button Clicked");  
+    streamManager.addStreamToPeerConnection('programme', peerConn);
     
-    pgmStream.getTracks().forEach(track => {
-        peerConn.addTrack(track, pgmStream);
-    });
-    console.log("Peer connection: ", peerConn.getSenders());
+    // console.log("Starting programme stream");
+    
+    // pgmStream.getTracks().forEach(track => {
+    //     peerConn.addTrack(track, pgmStream);
+    // });
+    // console.log("Peer connection: ", peerConn.getSenders());
 
-    if (commsStream != undefined) {
-        commsStream.getTracks().forEach(track => track.stop());
-    }
-    commsStream.getTracks().forEach(track => { 
-        peerConn.addTrack(track, commsStream);
-    }
-    );
-    console.log("Comms stream added to peer connection");
-    console.log("Peer connection: ", peerConn.getSenders());
+    // if (commsStream != undefined) {
+    //     commsStream.getTracks().forEach(track => track.stop());
+    // }
+    // commsStream.getTracks().forEach(track => { 
+    //     peerConn.addTrack(track, commsStream);
+    // }
+    // );
+    // console.log("Comms stream added to peer connection");
+    // console.log("Peer connection: ", peerConn.getSenders());
 
-    signallingManager.createAndSendOffer();
+    // signallingManager.createAndSendOffer();
 };
 
 signallingManager.handleIceCandidates();

@@ -1,7 +1,8 @@
 export class SignallingManager {
-    constructor(peerConn, socketUrl) {
+    constructor(peerConn, socketUrl, operator) {
         this.peerConn = peerConn;
         this.webSocket = new WebSocket(socketUrl);
+        this.operator = operator;
 
         this.webSocket.onmessage = (event) => {
 			this.handleSignallingData(JSON.parse(event.data));
@@ -22,7 +23,7 @@ export class SignallingManager {
     handleSignallingData(data) {
         switch(data.type) {
             case "answer":
-                this.SignallingManagerpeerConn.setRemoteDescription(data.answer)
+                this.peerConn.setRemoteDescription(data.answer)
                 break
             case "candidate":
                 this.peerConn.addIceCandidate(data.candidate)
@@ -31,8 +32,7 @@ export class SignallingManager {
 
     //send data to the server with the operator username to specify the call
     sendData(data) {
-        let operator = 'vision-mixer';
-        data.username = operator;
+        data.username = this.operator;
         this.webSocket.send(JSON.stringify(data))
     }
     sendUser() {
