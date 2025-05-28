@@ -3,14 +3,15 @@
 // repopulate menus when device change is detected
 // return user selections to main programme
 
-
-
-
 export class DeviceManager {
 	constructor() {
 		this.devicePermissions = false;
 		this.devices = null;
 		this.menuElements = []; // Array of objects: {selectElement, deviceKind, streamId)
+		
+		navigator.mediaDevices.ondevicechange = (event) => {
+			this.handleAttachedDeviceChange();
+		}
 	}
 
 	async init() {

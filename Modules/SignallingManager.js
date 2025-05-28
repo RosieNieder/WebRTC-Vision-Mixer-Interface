@@ -40,7 +40,7 @@ export class SignallingManager {
         data.username = this.operator;
         this.webSocket.send(JSON.stringify(data))
     }
-    sendUser() {
+    sendUser() { //BUG!
         this.sendData({
             type: "store_user"
         })
