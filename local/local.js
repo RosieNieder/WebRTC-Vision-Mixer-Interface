@@ -22,6 +22,7 @@ const multiviewerMenu = document.getElementById("multiviewer-input-select");
 const programmeAudioInputMenu = document.getElementById("programme-audio-input-select");
 const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
 
+
 //buttons
 const sendUserButton = document.getElementById("send-user-button");
 const confirmInputDevicesButton = document.getElementById('confirm-input-devices-button');
@@ -71,11 +72,13 @@ function inspection(){
 //-----------------start programme------------
 await init();
 
-//add menus to device manager
+//add menus to device manager if permissions granted
+
+if (deviceManager.devicePermissions) {
 deviceManager.addMenu(multiviewerMenu, 'videoinput', 'programme')
 deviceManager.addMenu(programmeAudioInputMenu, 'audioinput', 'programme')
 deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
-
+}
 
 
 // event listeners

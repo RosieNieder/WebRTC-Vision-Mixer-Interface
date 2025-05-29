@@ -15,8 +15,12 @@ export class DeviceManager {
 	}
 
 	async init() {
-		await this.getPermissions();
-		await this.getDevices();
+		const success = await this.getPermissions();
+		if (success) {
+			await this.getDevices();
+		}  else {
+			console.warn('DeviceManager initialisation failed: no perimissions');
+		}
 	}
 	
 	//obtains user permissions
@@ -25,9 +29,11 @@ export class DeviceManager {
 			await navigator.mediaDevices.getUserMedia({audio: true, video: true});
 			console.log("User permission granted");
 			this.devicePermissions = true;
+			return true;
 		}
 		catch (err) {
 			console.error(err);
+			return false;
 		}
 	
 	}
@@ -44,7 +50,7 @@ export class DeviceManager {
 	//adds a menu to the menuElements array
 	addMenu(selectElement, deviceKind, streamId){ //HTML select element, device kind (audioinput, videoinput, audiooutput), streamId (programme, comms, monitor)
 		const item = {
-			menuName: selectElement, 
+			selectElement: selectElement, 
 			deviceType: deviceKind, 
 			streamId: streamId
 		}; 
@@ -53,7 +59,7 @@ export class DeviceManager {
 		//check if there are any menus in the array
 		if(this.menuElements.length !== 0) {
 			this.menuElements.forEach(menu => {
-				if (item.menuName === menu.menuName) {
+				if (item.selectElement === menu.selectElement) {
 					// console.log("Menu already exists");
 					exists = true;
 				}
@@ -72,6 +78,10 @@ export class DeviceManager {
 
 	//populates the menu with the currently connected devices
 	populateMenu(selectElement, deviceKind) {
+		if (this.devicePermissions === false) {
+			console.warn("Permissions not granted, reset permissions and reload page")
+			return;
+		}
 		//clear menu before populating if it exists
 		if (selectElement.length > 0) {
 			while (selectElement.firstChild) {
@@ -94,7 +104,7 @@ export class DeviceManager {
 	updateMenus() {
 		this.menuElements.forEach(menu => {
 			// console.log(menu);
-			this.populateMenu(menu.menuName, menu.deviceType);
+			this.populateMenu(menu.selectElement, menu.deviceType);
 		})
 	}
 
@@ -113,7 +123,7 @@ export class DeviceManager {
 		this.menuElements.forEach(menu => {
 			if (menu.streamId !== streamId) return;
 	
-			const selectedDeviceId = menu.menuName.value;
+			const selectedDeviceId = menu.selectElement.value;
 			const deviceType = menu.deviceType;
 	
 			if (deviceType === 'videoinput') {
@@ -125,8 +135,5 @@ export class DeviceManager {
 	
 		return constraints;
 	}
-
-	
-
 }
 
