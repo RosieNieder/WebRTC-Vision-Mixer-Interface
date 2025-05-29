@@ -1,3 +1,11 @@
+/* TODO: Add Websocket address input field
+
+
+
+
+*/
+
+
 //---------------------LOCAL NODE-----------------
 import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
@@ -21,7 +29,6 @@ let pgmStreamConstraints, commsStreamConstraints;
 const multiviewerMenu = document.getElementById("multiviewer-input-select");
 const programmeAudioInputMenu = document.getElementById("programme-audio-input-select");
 const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
-
 
 //buttons
 const sendUserButton = document.getElementById("send-user-button");
@@ -75,9 +82,9 @@ await init();
 //add menus to device manager if permissions granted
 
 if (deviceManager.devicePermissions) {
-deviceManager.addMenu(multiviewerMenu, 'videoinput', 'programme')
-deviceManager.addMenu(programmeAudioInputMenu, 'audioinput', 'programme')
-deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
+    deviceManager.addMenu(multiviewerMenu, 'videoinput', 'programme')
+    deviceManager.addMenu(programmeAudioInputMenu, 'audioinput', 'programme')
+    deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
 }
 
 // event listeners
