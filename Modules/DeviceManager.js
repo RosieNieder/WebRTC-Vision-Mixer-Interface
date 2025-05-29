@@ -60,19 +60,18 @@ export class DeviceManager {
 		if(this.menuElements.length !== 0) {
 			this.menuElements.forEach(menu => {
 				if (item.selectElement === menu.selectElement) {
-					// console.log("Menu already exists");
+		
 					exists = true;
 				}
 			})
 			if (!exists) {
 				this.menuElements.push(item);
-			// console.log("New Menu Detected: Adding New Menu")
+		
 			}
 		} else {
 			this.menuElements.push(item);
-			// console.log("No menus added yet, therefore Adding New Menu")
+		
 		}
-		// console.log(this.menuElements);
 		this.populateMenu(selectElement, deviceKind);
 }
 
@@ -82,6 +81,7 @@ export class DeviceManager {
 			console.warn("Permissions not granted, reset permissions and reload page")
 			return;
 		}
+		const previousSelectionDeviceId = selectElement.value
 		//clear menu before populating if it exists
 		if (selectElement.length > 0) {
 			while (selectElement.firstChild) {
@@ -95,9 +95,20 @@ export class DeviceManager {
 
 			if (device.kind === deviceKind) {
 				selectElement.appendChild(option);
-				selectElement.selectedIndex = 0;
 			}
 		});
+
+		// Try to restore previous selection if still available
+		const stillAvailable = Array.from(selectElement.options).some(
+			option => option.value === previousSelectionDeviceId
+		);
+
+		if (stillAvailable) {
+			selectElement.value = previousSelectionDeviceId;
+		} else if (selectElement.options.length > 0) {
+			// Default to first option if previous not available
+			selectElement.selectedIndex = 0;
+		}
 	}
 
 	//iterates over the menuElements array and repopulates the menus
@@ -134,6 +145,15 @@ export class DeviceManager {
 		});
 	
 		return constraints;
+	}
+
+	getCurrentDeviceSelection(){
+		const currentSelection = [];
+		this.menuElements.forEach(menu => {
+			const selectedIndex = menu.selectElement.selectedIndex;
+			currentSelection.push({deviceId: menu.selectElement.value, deviceLabel: menu.selectElement.options[selectedIndex].text, deviceKind: menu.deviceType});
+		})
+		return currentSelection;
 	}
 }
 

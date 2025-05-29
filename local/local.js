@@ -80,7 +80,6 @@ deviceManager.addMenu(programmeAudioInputMenu, 'audioinput', 'programme')
 deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
 }
 
-
 // event listeners
 sendUserButton.onclick = () => {
     signallingManager.sendUser(); //NOTE TO SELF, does this need to be asynchronous, as server may take a while to respond? also still sending user:undefined before actual user
@@ -92,6 +91,7 @@ confirmInputDevicesButton.onclick = () => {
 
 inspectButton.onclick = () => {
     inspection();
+    console.log(deviceManager.getCurrentDeviceSelection());
 }
 
 startCallButton.onclick = () => {
