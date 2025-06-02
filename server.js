@@ -10,7 +10,7 @@ server.listen(3200, () => {
 
 const webSocket = new Socket({ httpServer: server })
 
-let users = []
+let users = [] //holds local nodes user information
 
 webSocket.on('request', (req) => {
     const connection = req.accept()
@@ -19,22 +19,20 @@ webSocket.on('request', (req) => {
         const data = JSON.parse(message.utf8Data)
         console.log('data received:' + JSON.stringify(data.type)) 
 
-        const user = findUser(data.username);
+        const user = findUser(data.username); //check if user already exists and store result
 
         switch(data.type) {
             case "store_user":
-            console.log('user:' + user)
-                if (user != null) {
+                if (user != null) { //if user already exists, exit early
                     return
                 }
-
                 const newUser = {
                      conn: connection,
                      username: data.username
                 }
 
                 users.push(newUser)
-                console.log(newUser.username)
+                console.log("user: ", newUser.username)
                 break
             case "store_offer":
                 if (user == null)
@@ -50,6 +48,7 @@ webSocket.on('request', (req) => {
                     user.candidates = []
                 
                 user.candidates.push(data.candidate)
+                console.log("storing candidate");
                 break
             case "send_answer":
                 if (user == null) {
@@ -75,7 +74,6 @@ webSocket.on('request', (req) => {
                 if (user == null) {
                     return
                 }
-
                 sendData({
                     type: "offer",
                     offer: user.offer
@@ -87,7 +85,6 @@ webSocket.on('request', (req) => {
                         candidate: candidate
                     }, connection)
                 })
-
                 break
         }
     })
@@ -104,10 +101,11 @@ webSocket.on('request', (req) => {
 
 function sendData(data, conn) {
     conn.send(JSON.stringify(data))
+    console.log("sending data");
 }
 
 function findUser(username) {
-    for (let i = 0;i < users.length;i++) {
+    for (let i = 0;i < users.length;i++) { //iterate over elements in user array to check if a username already exists
         if (users[i].username == username)
             return users[i]
     }

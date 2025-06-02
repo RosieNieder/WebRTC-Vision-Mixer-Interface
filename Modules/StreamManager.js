@@ -54,7 +54,7 @@ export class StreamManager {
         let exists = false;
         console.log("Attaching stream: ", streamId);
         
-        if(!stream) {
+        if(!stream) { //checks that the stream exists
             console.warn("No stream found with for ID: ", streamId);
             return;
         }
@@ -67,7 +67,6 @@ export class StreamManager {
             })
             return;
         }
-    
         sendersArray.forEach(sender => { //iterate over senders
 
             if(sender.track._streamId === streamId) {  //if the streamId of a sender matches currently selected stream
@@ -88,14 +87,12 @@ export class StreamManager {
                 })
             }
         })
-        
         if (exists === false) { //if stream was not found in senders array, it is new so attach stream as normal
             console.log("Stream is new, attaching stream");
             stream.getTracks().forEach(track => {
                 peerConn.addTrack(track, stream);
             })
         }
-
     }
     
     routeStreamToElement(streamId, element) {
@@ -104,7 +101,4 @@ export class StreamManager {
             console.log("Routing ", streamId, " to ", element)
         }
     }
-
-
-   
-    }
+}

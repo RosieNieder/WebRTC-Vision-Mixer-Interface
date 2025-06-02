@@ -100,7 +100,5 @@ inspectButton.onclick = () => {
 startCallButton.onclick = () => {
     streamManager.attachStreamToPeerConnection('programme', peerConn);
     streamManager.attachStreamToPeerConnection('comms', peerConn);
-    streamManager.attachStreamToPeerConnection('test', peerConn);
-
     signallingManager.createAndSendOffer();
 }
