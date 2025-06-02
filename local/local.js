@@ -1,8 +1,5 @@
 /* TODO: Add Websocket address input field
 
-
-
-
 */
 
 
@@ -13,7 +10,7 @@ import { SignallingManager } from '../Modules/SignallingManager.js';
 
 
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.102:3200"
+let webSocketAddress = "ws://192.168.0.101:3200"
 const peerConn = new RTCPeerConnection;
 
 //create managers
@@ -40,7 +37,6 @@ const inspectButton = document.getElementById('inspect-button');
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
 const pgmAudioMonitor = document.getElementById("pgm-audio-monitor");
 const localCommsMonitor = document.getElementById("local-comms-audio-monitor");
-
 
 // --------------- function definitions ------------
 async function init() {
@@ -102,5 +98,9 @@ inspectButton.onclick = () => {
 }
 
 startCallButton.onclick = () => {
+    streamManager.attachStreamToPeerConnection('programme', peerConn);
+    streamManager.attachStreamToPeerConnection('comms', peerConn);
+    streamManager.attachStreamToPeerConnection('test', peerConn);
+
     signallingManager.createAndSendOffer();
 }
