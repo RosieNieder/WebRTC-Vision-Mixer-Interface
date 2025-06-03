@@ -17,9 +17,6 @@ async function init() {
     });   
 }
 
-
-
-
 const myButton = document.getElementById("myButton");
 const myVideo = document.getElementById("remote-stream");
 

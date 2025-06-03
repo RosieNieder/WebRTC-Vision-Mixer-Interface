@@ -3,9 +3,11 @@ export class SignallingManager {
     constructor(peerConn, socketUrl, operator, type) {
         this.peerConn = peerConn;
         this.webSocket = new WebSocket(socketUrl);
+        this.socketUrl = socketUrl;
         this.operator = operator;
         this.remoteStream;
         this.type = type;
+        this.socketOpen = false;
 
         this.webSocket.onmessage = (event) => {
 			console.log("Handling Signalling Data: ", JSON.parse(event.data));
@@ -14,13 +16,18 @@ export class SignallingManager {
 
         this.webSocket.addEventListener('open', (event) => {
             console.log('WebSocket Connection Success')
+            this.socketOpen = true;
         })
 
         this.webSocket.addEventListener('error', (err) => {
             console.log('WebSocket Error: ', err.err);
+            this.webSocket.close;
+            this.socketOpen = false;
         })
         this.webSocket.addEventListener('close', () => {
             console.log('WebSocket Closed');
+            
+            this.socketOpen = false;
         })
 
         this.peerConn.onicecandidate = (e) => {
@@ -41,15 +48,17 @@ export class SignallingManager {
             }
 			}
 		};
-        this.peerConn.onaddstream = (e) =>
-        {
-            this.remoteStream = e.stream;
 
-            console.log(this.remoteStream);
-            console.log("stream added")
-            
+       this.peerConn.ontrack = (event) => {
+        if (!this.remoteStream) {
+            this.remoteStream = new MediaStream();
+        }
+            this.remoteStream.addTrack(event.track);
         }
     }
+
+
+
 
 //data received is either an SDP answer or an icecandidate, update peerConn as appropriate
     handleSignallingData(data) {
@@ -88,8 +97,13 @@ export class SignallingManager {
 
     //send data to the server with the operator username to specify the call
     sendData(data) {
+        if (this.socketOpen === true){
         data.username = this.operator;
         this.webSocket.send(JSON.stringify(data))
+        }
+        else {
+            console.warn("Websocket not open, data not sent: ", data)
+        }
     }
     sendUser() {
         this.sendData({
