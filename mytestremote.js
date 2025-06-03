@@ -11,7 +11,7 @@ let testStream;
 
 
 async function init() {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video:true}).then((stream) => {
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true, video:false}).then((stream) => {
         testStream = stream;
         peerConn.addStream(testStream);
     });   

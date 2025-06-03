@@ -54,6 +54,7 @@ export class SignallingManager {
             this.remoteStream = new MediaStream();
         }
             this.remoteStream.addTrack(event.track);
+            console.log(this.remoteStream)
         }
     }
 

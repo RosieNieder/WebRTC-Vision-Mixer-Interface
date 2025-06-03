@@ -7,7 +7,7 @@
     <!-- <title>Local WebRTC Build</title> -->
 </head>
 <body class="local">
-    <h1>LOCAL NODE</h1>
+    <h1>REMOTE NODE</h1>
     <div class="container">
         
 
@@ -17,33 +17,24 @@
             <audio id = "pgm-audio-monitor"controls muted autoplay></audio>
             <label for="pgm-audio-monitor">Programme Audio Monitor</label>
         </div>
-        <!-- <video id="remote-video" autoplay></video> -->
-        <!-- <input placeholder="Enter IP Address..." id="ipAddressField">
-        <button onclick="getipAddress()">Submit</button> -->
+       
         <div class="input">
-            <label for="multiviewer-input-select">Multiviewer Input: </label>
-            <select id="multiviewer-input-select"></select>
-            <label for="programme-audio-input-select">Programme Audio Input: </label>
-            <select id="programme-audio-input-select"></select>
+            
             <label for="comms-audio-input-select">Comms Audio Input: </label>
             <select id="comms-audio-input-select"></select>
-            <!-- <label for="remote-operator-type">Remote Operator: </label>
-            <select id="remote-operator-type">
-                <option>Vision</option>
-                <option>Autoscript Operator</option> -->
             </select>
             <label for="local-comms-audio-monitor">Local Comms Monitor</label>
             <audio controls muted autoplay id="local-comms-audio-monitor"></audio>
             <label for="remote-comms-audio-monitor">Remote Comms Monitor</label>
             <audio controls muted autoplay id="remote-comms-audio-monitor"></audio>
         
-        <button id="send-user-button">Send User To Server</button>
-        <button id="start-call-button">Start Call</button>
+        <button id="join-call-button">Join Call</button>
+        <button id="update-monitors-button">Update Monitors</button>
         <button id="inspect-button">INSPECT</button>
         </div>
         
     </div>
-    <script type = "module" src="local.js"></script>
+    <script type = "module" src="remote.js"></script>
     
 </body>
 </html>

@@ -40,7 +40,7 @@ myButton.onclick = () => {
     signallingManager.createAndSendOffer();
 };
 answerButton.onclick = () => {
-    myVideo.srcObj = stream;
+    myVideo.srcObject = stream;
 };
 
 

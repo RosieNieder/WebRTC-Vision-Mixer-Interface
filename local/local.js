@@ -1,22 +1,22 @@
 /* TODO: Add Websocket address input field
+* attach remote comms monitor to incoming stream
 
 */
-
-
 //---------------------LOCAL NODE-----------------
 import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
 
+
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.101:3200"
+let webSocketAddress = "ws://192.168.0.102:3200"
 const peerConn = new RTCPeerConnection;
 
 //create managers
 const streamManager = new StreamManager();
 const deviceManager = new DeviceManager();
-const signallingManager = new SignallingManager(peerConn, webSocketAddress, operator);
+const signallingManager = new SignallingManager(peerConn, webSocketAddress, operator, "caller");
 
 //initialise constraints
 let pgmStreamConstraints, commsStreamConstraints;
@@ -37,6 +37,7 @@ const inspectButton = document.getElementById('inspect-button');
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
 const pgmAudioMonitor = document.getElementById("pgm-audio-monitor");
 const localCommsMonitor = document.getElementById("local-comms-audio-monitor");
+const remoteCommsMonitor = document.getElementById("remote-comms-audio-monitor");
 
 // --------------- function definitions ------------
 async function init() {
@@ -45,7 +46,7 @@ async function init() {
     commsStreamConstraints = deviceManager.getStreamConstraints('comms');
 }
 
-function initialiseCall() {
+function initialiseStreams() {
     pgmStreamConstraints = deviceManager.getStreamConstraints('programme');
     commsStreamConstraints = deviceManager.getStreamConstraints('comms');
     streamManager.createStream('programme', pgmStreamConstraints)
@@ -58,9 +59,16 @@ function initialiseCall() {
     streamManager.createStream('comms', commsStreamConstraints)
     .then(() => {
         streamManager.routeStreamToElement('comms', localCommsMonitor);
+    })
+    .then(() =>{
+        streamManager.attachStreamToPeerConnection('programme', peerConn);
+        streamManager.attachStreamToPeerConnection('comms', peerConn);
     }).catch (err => {
         console.error("Failed to create and attach stream to monitors: ", err);
     })
+
+
+
 }
 
 function inspection(){
@@ -83,22 +91,62 @@ if (deviceManager.devicePermissions) {
     deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
 }
 
+initialiseStreams();
+
+multiviewerMenu.onchange = () => {
+    pgmStreamConstraints = deviceManager.getStreamConstraints('programme');
+    streamManager.createStream('programme', pgmStreamConstraints)
+    .then(() => {
+        streamManager.routeStreamToElement('programme', pgmAudioMonitor);
+        streamManager.routeStreamToElement('programme', multiviewVideoMon)
+    }).then(() => {
+        streamManager.attachStreamToPeerConnection('programme', peerConn);
+    }).catch((err) => {
+        console.log("error updating and attaching stream: ", err);
+    })
+}
+
+//BUG! Changing this pauses video on remote end?
+programmeAudioInputMenu.onchange = () => {
+    pgmStreamConstraints = deviceManager.getStreamConstraints('programme');
+    streamManager.createStream('programme', pgmStreamConstraints)
+    .then(() => {
+        streamManager.routeStreamToElement('programme', pgmAudioMonitor);
+        streamManager.routeStreamToElement('programme', multiviewVideoMon)
+    }).then(() => {
+        streamManager.attachStreamToPeerConnection('programme', peerConn);
+    }).catch((err) => {
+        console.log("error updating and attaching stream: ", err);
+    })
+        
+}
+
+commsAudioInputMenu.onchange = () => {
+    commsStreamConstraints = deviceManager.getStreamConstraints('comms');
+    streamManager.createStream('comms', commsStreamConstraints)
+    .then(() => {
+        streamManager.routeStreamToElement('comms', localCommsMonitor)
+    }).then(() => {
+        streamManager.attachStreamToPeerConnection('comms', peerConn);
+    }).catch((err) => {
+        console.log("error updating and attaching stream: ", err);
+    })
+}
+
 // event listeners
 sendUserButton.onclick = () => {
     signallingManager.sendUser(); //NOTE TO SELF, does this need to be asynchronous, as server may take a while to respond? also still sending user:undefined before actual user
 }
 
-confirmInputDevicesButton.onclick = () => {
-    initialiseCall();
-}
-
 inspectButton.onclick = () => {
     inspection();
     console.log(deviceManager.getCurrentDeviceSelection());
+    
+
 }
 
 startCallButton.onclick = () => {
-    streamManager.attachStreamToPeerConnection('programme', peerConn);
-    streamManager.attachStreamToPeerConnection('comms', peerConn);
+    signallingManager.sendUser();
     signallingManager.createAndSendOffer();
 }
+
