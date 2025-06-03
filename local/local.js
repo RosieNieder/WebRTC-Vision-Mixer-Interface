@@ -76,6 +76,13 @@ function inspection(){
     console.log("comms constraints: ", commsStreamConstraints);
     console.log("programme stream: ", streamManager.streams['programme']);
     console.log("comms stream: ", streamManager.streams['comms']);
+    peerConn.getStats().then((stats) =>
+    {
+        stats.forEach(element => {
+            console.log(element);
+            
+        });
+    });
 }
 
 //-----------------start programme------------
