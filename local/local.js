@@ -28,8 +28,6 @@ const programmeAudioInputMenu = document.getElementById("programme-audio-input-s
 const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
 
 //buttons
-const sendUserButton = document.getElementById("send-user-button");
-const confirmInputDevicesButton = document.getElementById('confirm-input-devices-button');
 const startCallButton = document.getElementById('start-call-button');
 const inspectButton = document.getElementById('inspect-button');
 
@@ -133,10 +131,7 @@ commsAudioInputMenu.onchange = () => {
     })
 }
 
-// event listeners
-sendUserButton.onclick = () => {
-    signallingManager.sendUser(); //NOTE TO SELF, does this need to be asynchronous, as server may take a while to respond? also still sending user:undefined before actual user
-}
+
 
 inspectButton.onclick = () => {
     inspection();
