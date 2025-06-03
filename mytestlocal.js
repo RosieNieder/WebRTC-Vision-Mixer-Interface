@@ -3,7 +3,7 @@ import { SignallingManager } from '../Modules/SignallingManager.js';
 const peerConn = new RTCPeerConnection;
 
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.101:3200"
+let webSocketAddress = "ws://192.168.0.102:3200"
 const myButton = document.getElementById("myButton");
 const answerButton = document.getElementById("receiveAnswer");
 const inspectButton = document.getElementById("peerConnInspect");

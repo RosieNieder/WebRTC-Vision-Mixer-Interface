@@ -1,4 +1,5 @@
 
+
 const Socket = require("websocket").server
 const http = require("http")
 
@@ -101,7 +102,7 @@ webSocket.on('request', (req) => {
 
 function sendData(data, conn) {
     conn.send(JSON.stringify(data))
-    console.log("sending data");
+    console.log("sending data: ", data.type);
 }
 
 function findUser(username) {

@@ -16,8 +16,8 @@ export class SignallingManager {
             console.log('WebSocket Connection Success')
         })
 
-        this.webSocket.addEventListener('error', () => {
-            console.log('WebSocket Error');
+        this.webSocket.addEventListener('error', (err) => {
+            console.log('WebSocket Error: ', err.err);
         })
         this.webSocket.addEventListener('close', () => {
             console.log('WebSocket Closed');
@@ -67,10 +67,18 @@ export class SignallingManager {
             case "receiver": //receiver receives offers and candidates from local
                 switch(data.type) {
                     case "offer":
-                        this.peerConn.setRemoteDescription(data.offer);
-                        this.createAndSendAnswer();
+                        console.log("received offer")
+                        this.peerConn.setRemoteDescription(data.offer).then(()=> {
+                            console.log(this.peerConn.remoteDescription)
+                            this.createAndSendAnswer();
+                        }).catch((err) =>{
+                            console.log(err);
+                        })
+                        //console.log(this.peerConn.remoteDescription);
+                        
                         break
                     case "candidate":
+                        console.log("received candidate")
                         this.peerConn.addIceCandidate(data.candidate);
                         break
             }   
@@ -96,23 +104,29 @@ export class SignallingManager {
         })
     }
 
+
     createAndSendAnswer(){
+        console.log('creating and sending answer')
         if (this.peerConn.remoteDescription == null)
         {
             return;
         }
-        this.peerConn.createAnswer()
-        .then(answer=> {this.peerConn.setLocalDescription(answer)
-            this.sendData({
-                type: "send_answer",
-                answer: this.peerConn.localDescription
+        try {
+            this.peerConn.createAnswer().then((answer) => {
+                this.peerConn.setLocalDescription(answer)
+                console.log("answer: ", answer)
+                this.sendData({
+                    type: "send_answer",
+                    answer: answer
+                })
             })
-        })
-        .catch(err => {
-            console.error("error creating answer: ", err);
-        })
-        
+            
+        }
+        catch (err){
+            console.log(err);
+        }
     }
+        
 
     createAndSendOffer() {
         this.peerConn.createOffer()

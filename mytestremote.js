@@ -4,7 +4,7 @@ import { SignallingManager } from '../Modules/SignallingManager.js';
 const peerConn = new RTCPeerConnection;
 
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.101:3200"
+let webSocketAddress = "ws://192.168.0.102:3200"
 
 const signallingManager = new SignallingManager(peerConn, webSocketAddress, operator, "receiver");
 let testStream;
@@ -36,7 +36,9 @@ myButton.onclick = () => {
 
 
 inspectButton.onclick = () => {
-    myVideo.srcObj = signallingManager.remoteStream;
+
+    const stream = signallingManager.remoteStream;
+    myVideo.srcObject = stream;
     console.log(myVideo.srcObj);
     signallingManager.inspect();
  }
