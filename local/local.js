@@ -93,11 +93,14 @@ function inspection(){
 function updateMonitor() {
 
 
+    Object.entries(signallingManager.incomingStreams).forEach(([streamId, tracks]) => {
+        const stream = new MediaStream(tracks);
 
-
-    const stream = signallingManager.remoteStream;
-    remoteCommsMonitor.srcObject = stream;
-    console.log(stream);
+        
+        if (tracks.length === 1) {
+            remoteCommsMonitor.srcObject = stream;
+        }
+    })
 }
 
 //-----------------start programme------------

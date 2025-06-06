@@ -46,6 +46,8 @@ function initialiseCall() {
     streamManager.createStream('comms', commsStreamConstraints)
     .then(() => {
         streamManager.routeStreamToElement('comms', localCommsMonitor);
+    }).then(() => {
+        streamManager.attachStreamToPeerConnection('comms', peerConn)
     }).catch (err => {
         console.error("Failed to create and attach stream to monitors: ", err);
     })
@@ -74,7 +76,7 @@ commsAudioInputMenu.onchange = () => {
     .then(() => {
         streamManager.routeStreamToElement('comms', localCommsMonitor)
     }).then(() => {
-        streamManager.attachStreamToPeerConnection('comms', peerConn);
+        streamManager.attachStreamToPeerConnection('comms', peerConn)
     }).catch((err) => {
         console.log("error updating and attaching stream: ", err);
     })
