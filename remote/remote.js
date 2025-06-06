@@ -33,6 +33,7 @@ const connectButton = document.getElementById('connect-button');
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
 const pgmAudioMonitor = document.getElementById("pgm-audio-monitor");
 const localCommsMonitor = document.getElementById("local-comms-audio-monitor");
+const remoteCommsMonitor = document.getElementById("remote-comms-audio-monitor");
 
 // --------------- function definitions ------------
 async function init() {
@@ -90,9 +91,20 @@ joinCallButton.onclick = () => {
 }
 
 function updateMonitor() {
-    const stream = signallingManager.remoteStream;
-    multiviewVideoMon.srcObject = stream;
-    pgmAudioMonitor.srcObject = stream;
+    console.log(signallingManager.incomingStreams);
+
+    Object.entries(signallingManager.incomingStreams).forEach(([streamId, tracks]) => {
+        const stream = new MediaStream(tracks);
+
+        if (tracks.length === 2) {
+            console.log(stream);
+                    multiviewVideoMon.srcObject = stream;
+            pgmAudioMonitor.srcObject = stream;
+        } else if (tracks.length === 1) {
+            remoteCommsMonitor.srcObject = stream;
+        }
+    })
+    
 }
 
 updateMonitorButton.onclick = () => {

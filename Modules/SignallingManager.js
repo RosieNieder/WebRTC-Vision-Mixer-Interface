@@ -1,4 +1,4 @@
-//TODO: Handling of ICE candidates
+//TODO:
 export class SignallingManager {
     constructor(peerConn, socketUrl, operator, type) {
         this.peerConn = peerConn;
@@ -6,6 +6,7 @@ export class SignallingManager {
         this.socketUrl = socketUrl;
         this.operator = operator;
         this.remoteStream;
+        this.incomingStreams ={};
         this.type = type;
         this.socketOpen = false;
 
@@ -26,6 +27,7 @@ export class SignallingManager {
         })
         this.webSocket.addEventListener('close', () => {
             console.log('WebSocket Closed');
+            setLocalDescription()
             
             this.socketOpen = false;
         })
@@ -50,12 +52,35 @@ export class SignallingManager {
 		};
 
        this.peerConn.ontrack = (event) => {
-        if (!this.remoteStream) {
-            this.remoteStream = new MediaStream();
-        }
-            this.remoteStream.addTrack(event.track);
-            console.log(this.remoteStream)
-        }
+        //when a track is added to the connection it needs to be saved in an array with its associated streamId
+        //then when monitors are populated, the array can be inspected and for the tracks with matching streamIds, a programme stream can be created, and a for the lone Id, a comms stream can be created and assigned
+        //this should happen in the main programme, as the handling of the streams is unique to the caller and receiver
+
+        const stream = event.streams[0];
+        console.log(stream);
+        const streamId = stream.id;
+        console.log(streamId)
+        const track = event.track;
+        console.log(track)
+
+        
+        if (!this.incomingStreams[streamId]) {
+            this.incomingStreams[streamId] = [];
+            
+        
+        } 
+            this.incomingStreams[streamId].push(track);    
+        
+        
+        // console.log(event.track, event.streams);
+
+        // if (!this.remoteStream) {
+        //     this.remoteStream = new MediaStream();
+        // }
+        //     this.remoteStream.addTrack(event.track);
+        //     console.log("Stream added by remote: ", this.remoteStream)
+        // }
+}
     }
 
 //data received is either an SDP answer or an icecandidate, update peerConn as appropriate
@@ -160,4 +185,6 @@ export class SignallingManager {
         console.log("Local description ", this.peerConn.localDescription);
         console.log("Remote description: ", this.peerConn.remoteDescription);
     }
+
 }
+

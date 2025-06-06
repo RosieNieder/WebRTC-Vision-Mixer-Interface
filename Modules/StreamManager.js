@@ -51,6 +51,7 @@ export class StreamManager {
 
         const sendersArray = peerConn.getSenders();
         const stream = this.getStream(streamId);
+        console.log(stream);
         let exists = false;
         console.log("Attaching stream: ", streamId);
         
@@ -64,6 +65,7 @@ export class StreamManager {
             console.log("New Stream detected, adding stream")
             stream.getTracks().forEach(track => { //add stream to connection
                 peerConn.addTrack(track, stream);
+                
             })
             return;
         }

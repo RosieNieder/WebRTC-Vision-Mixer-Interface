@@ -33,6 +33,7 @@ const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
 const startCallButton = document.getElementById('start-call-button');
 startCallButton.disabled = true;
 const inspectButton = document.getElementById('inspect-button');
+const updateMonitorButton = document.getElementById('update-monitors-button');
 
 //monitors
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
@@ -86,6 +87,17 @@ function inspection(){
             
         });
     });
+    
+}
+
+function updateMonitor() {
+
+
+
+
+    const stream = signallingManager.remoteStream;
+    remoteCommsMonitor.srcObject = stream;
+    console.log(stream);
 }
 
 //-----------------start programme------------
@@ -141,7 +153,10 @@ commsAudioInputMenu.onchange = () => {
     })
 }
 
-
+updateMonitorButton.onclick = () => {
+    console.log("Updating monitor")
+    updateMonitor();
+}
 
 inspectButton.onclick = () => {
     inspection();
