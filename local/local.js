@@ -7,9 +7,6 @@ import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
-
-
-
 let operator = "vision-mixer";
 let webSocketAddress = null;
 const peerConn = new RTCPeerConnection;
@@ -28,6 +25,7 @@ let pgmStreamConstraints, commsStreamConstraints;
 const multiviewerMenu = document.getElementById("multiviewer-input-select");
 const programmeAudioInputMenu = document.getElementById("programme-audio-input-select");
 const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
+const audioOutputMenu = document.getElementById("audio-output-select");
 
 //buttons
 const startCallButton = document.getElementById('start-call-button');
@@ -109,9 +107,14 @@ if (deviceManager.devicePermissions) {
     deviceManager.addMenu(multiviewerMenu, 'videoinput', 'programme')
     deviceManager.addMenu(programmeAudioInputMenu, 'audioinput', 'programme')
     deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
+    deviceManager.addMenu(audioOutputMenu, 'audiooutput');
 }
 
 initialiseStreams();
+
+audioOutputMenu.onchange = () => {
+    deviceManager.setAudioOutput(audioOutputMenu, pgmAudioMonitor);
+}
 
 multiviewerMenu.onchange = () => {
     pgmStreamConstraints = deviceManager.getStreamConstraints('programme');

@@ -206,7 +206,21 @@ export class DeviceManager {
 		})
 		return currentSelection;
 	}
+	setAudioOutput(menu, audioSource) {
+		const selectedDevice = menu.value;
+		try {
+			audioSource.setSinkId(selectedDevice);
+		}
+		catch (err){
+			console.warn("Setting output unsuccessful");
+
+		}
+
+	}
+
+
 }
+
 
 /**
  * Example:
