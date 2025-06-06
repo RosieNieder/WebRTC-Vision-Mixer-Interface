@@ -9,14 +9,16 @@ import { SignallingManager } from '../Modules/SignallingManager.js';
 
 
 
+
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.102:3200"
+let webSocketAddress = null;
 const peerConn = new RTCPeerConnection;
 
 //create managers
 const streamManager = new StreamManager();
 const deviceManager = new DeviceManager();
-const signallingManager = new SignallingManager(peerConn, webSocketAddress, operator, "caller");
+let signallingManager = null;
+
 
 //initialise constraints
 let pgmStreamConstraints, commsStreamConstraints;
@@ -29,6 +31,7 @@ const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
 
 //buttons
 const startCallButton = document.getElementById('start-call-button');
+startCallButton.disabled = true;
 const inspectButton = document.getElementById('inspect-button');
 
 //monitors
@@ -143,7 +146,6 @@ commsAudioInputMenu.onchange = () => {
 inspectButton.onclick = () => {
     inspection();
     console.log(deviceManager.getCurrentDeviceSelection());
-    
 
 }
 
@@ -151,4 +153,33 @@ startCallButton.onclick = () => {
     signallingManager.sendUser();
     signallingManager.createAndSendOffer();
 }
+
+document.getElementById('connect-button').addEventListener('click', () => {
+  const socketUrl = document.getElementById('websocket-url').value.trim();
+  if (signallingManager != null){
+    console.log("socket open, closing socket")
+    signallingManager.webSocket.close();
+  }
+
+  if (!socketUrl.startsWith('ws://') && !socketUrl.startsWith('wss://')) {
+    alert('Please enter a valid WebSocket address (ws:// or wss://)');
+    return;
+  } else {
+    signallingManager = new SignallingManager(peerConn, socketUrl, operator, 'caller')
+  }
+  
+  if (signallingManager != null && signallingManager.webSocket) {
+    signallingManager.webSocket.addEventListener("open", () => {
+        startCallButton.disabled = false;
+    })
+    
+    signallingManager.webSocket.addEventListener("error", () => {
+        startCallButton.disabled = true;
+        })
+    }
+    signallingManager.webSocket.addEventListener("close", () => {
+        startCallButton.disabled = true;
+    })
+});
+
 

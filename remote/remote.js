@@ -7,7 +7,7 @@ import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.102:3200"
+let webSocketAddress = "ws://192.168.0.37:3200"
 const peerConn = new RTCPeerConnection;
 
 //create managers
