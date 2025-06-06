@@ -35,6 +35,7 @@ startCallButton.disabled = true;
 const inspectButton = document.getElementById('inspect-button');
 const updateMonitorButton = document.getElementById('update-monitors-button');
 
+
 //monitors
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
 const pgmAudioMonitor = document.getElementById("pgm-audio-monitor");
@@ -91,17 +92,13 @@ function inspection(){
 }
 
 function updateMonitor() {
-
-
     Object.entries(signallingManager.incomingStreams).forEach(([streamId, tracks]) => {
         const stream = new MediaStream(tracks);
-
-        
         if (tracks.length === 1) {
             remoteCommsMonitor.srcObject = stream;
         }
     })
-}
+} 
 
 //-----------------start programme------------
 await init();
@@ -199,5 +196,4 @@ document.getElementById('connect-button').addEventListener('click', () => {
         startCallButton.disabled = true;
     })
 });
-
 

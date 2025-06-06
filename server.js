@@ -87,6 +87,11 @@ webSocket.on('request', (req) => {
                     }, connection)
                 })
                 break
+            case "hang_up":
+                console.log("hang-up detected, relaying to clients")
+                sendData({
+                    type: "hang_up"
+                }, user.conn)
         }
     })
 

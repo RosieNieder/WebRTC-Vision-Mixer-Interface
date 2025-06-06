@@ -51,7 +51,6 @@ export class StreamManager {
 
         const sendersArray = peerConn.getSenders();
         const stream = this.getStream(streamId);
-        console.log(stream);
         let exists = false;
         console.log("Attaching stream: ", streamId);
         
@@ -95,6 +94,7 @@ export class StreamManager {
                 peerConn.addTrack(track, stream);
             })
         }
+        console.log(peerConn.getSenders())
     }
     
     routeStreamToElement(streamId, element) {

@@ -6,9 +6,10 @@ import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
+
 let operator = "vision-mixer";
 let webSocketAddress;
-const peerConn = new RTCPeerConnection;
+let peerConn = new RTCPeerConnection;
 
 //create managers
 const streamManager = new StreamManager();
@@ -28,6 +29,7 @@ joinCallButton.disabled = true;
 const inspectButton = document.getElementById('inspect-button');
 const updateMonitorButton = document.getElementById('update-monitors-button')
 const connectButton = document.getElementById('connect-button');
+const hangUpCallButton = document.getElementById('hang-up-call-button');
 
 //monitors
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
@@ -58,6 +60,8 @@ function inspection(){
     // console.log("peer connection senders: ", peerConn.getSenders());
     console.log("comms constraints: ", commsStreamConstraints);
     console.log("comms stream: ", streamManager.streams['comms']);
+    console.log(signallingManager.peerConn);
+    console.log(peerConn);
 }
 
 //-----------------start programme------------
@@ -85,9 +89,12 @@ commsAudioInputMenu.onchange = () => {
 inspectButton.onclick = () => {
     inspection();
     console.log(deviceManager.getCurrentDeviceSelection());
+    console.log(signallingManager.peerConn.getReceivers());
+    console.log(multiviewVideoMon.srcObject);
 }
 
 joinCallButton.onclick = () => {
+    peerConn = new RTCPeerConnection;
     signallingManager.joinCall();
     signallingManager.createAndSendAnswer();
 }
@@ -99,8 +106,8 @@ function updateMonitor() {
         const stream = new MediaStream(tracks);
 
         if (tracks.length === 2) {
-            console.log(stream);
-                    multiviewVideoMon.srcObject = stream;
+            console.log(stream.getVideoTracks());
+                multiviewVideoMon.srcObject = stream;
             pgmAudioMonitor.srcObject = stream;
         } else if (tracks.length === 1) {
             remoteCommsMonitor.srcObject = stream;
@@ -124,7 +131,7 @@ multiviewVideoMon.addEventListener('dblclick', () => {
 });
 
 
-document.getElementById('connect-button').addEventListener('click', () => {
+connectButton.addEventListener('click', () => {
   const socketUrl = document.getElementById('websocket-url').value.trim();
   if (signallingManager != null){
     console.log("socket open, closing socket")
@@ -151,3 +158,11 @@ document.getElementById('connect-button').addEventListener('click', () => {
         joinCallButton.disabled = true;
     })
 });
+
+
+
+hangUpCallButton.onclick = () => {
+    signallingManager.hangUp();
+    console.log("Hanging Up")
+
+}

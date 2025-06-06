@@ -68,17 +68,8 @@ export class SignallingManager {
         } 
             this.incomingStreams[streamId].push(track);    
         
-        
-        // console.log(event.track, event.streams);
-
-        // if (!this.remoteStream) {
-        //     this.remoteStream = new MediaStream();
-        // }
-        //     this.remoteStream.addTrack(event.track);
-        //     console.log("Stream added by remote: ", this.remoteStream)
-        // }
-}
     }
+}
 
 //data received is either an SDP answer or an icecandidate, update peerConn as appropriate
     handleSignallingData(data) {
@@ -90,6 +81,10 @@ export class SignallingManager {
                         break
                     case "candidate":
                         this.peerConn.addIceCandidate(data.candidate)
+                        break
+                    case "hang_up":
+                        console.log("Other Peer Hung Up the Call")
+                        this.cleanUp();
                         break
                 }
                 break
@@ -109,6 +104,10 @@ export class SignallingManager {
                     case "candidate":
                         console.log("received candidate")
                         this.peerConn.addIceCandidate(data.candidate);
+                        break
+                    case "hang_up":
+                        console.log("Other Peer Hung Up the Call")
+                        this.cleanUp();
                         break
             }   
             break
@@ -138,6 +137,23 @@ export class SignallingManager {
         })
     }
 
+    hangUp() {
+        this.sendData({
+            type: "hang_up"
+        })
+        this.cleanUp();
+    }
+
+
+    cleanUp() {
+        if (this.peerConn) {
+            this.peerConn.getSenders().forEach(sender => {
+                if (sender.track) sender.track.stop(); // Stop sending media
+            });
+            this.peerConn.close();
+            this.peerConn = new RTCPeerConnection;
+        }
+    }
 
     createAndSendAnswer(){
         console.log('creating and sending answer')
