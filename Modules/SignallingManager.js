@@ -58,9 +58,6 @@ export class SignallingManager {
         }
     }
 
-
-
-
 //data received is either an SDP answer or an icecandidate, update peerConn as appropriate
     handleSignallingData(data) {
         switch(this.type) { //check the type of node -> caller is local, receiver is remote

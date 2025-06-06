@@ -7,13 +7,13 @@ import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
 let operator = "vision-mixer";
-let webSocketAddress = "ws://192.168.0.37:3200"
+let webSocketAddress;
 const peerConn = new RTCPeerConnection;
 
 //create managers
 const streamManager = new StreamManager();
 const deviceManager = new DeviceManager();
-const signallingManager = new SignallingManager(peerConn, webSocketAddress, operator, "receiver");
+let signallingManager;
 
 //initialise constraints
 let commsStreamConstraints;
@@ -24,8 +24,10 @@ const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
 
 //buttons
 const joinCallButton = document.getElementById('join-call-button');
+joinCallButton.disabled = true;
 const inspectButton = document.getElementById('inspect-button');
 const updateMonitorButton = document.getElementById('update-monitors-button')
+const connectButton = document.getElementById('connect-button');
 
 //monitors
 const multiviewVideoMon = document.getElementById("multiview-video-monitor");
@@ -105,4 +107,33 @@ multiviewVideoMon.addEventListener('dblclick', () => {
       console.error(`Error attempting to enable full-screen mode: ${err.message}`);
     });
   }
+});
+
+
+document.getElementById('connect-button').addEventListener('click', () => {
+  const socketUrl = document.getElementById('websocket-url').value.trim();
+  if (signallingManager != null){
+    console.log("socket open, closing socket")
+    signallingManager.webSocket.close();
+  }
+
+  if (!socketUrl.startsWith('ws://') && !socketUrl.startsWith('wss://')) {
+    alert('Please enter a valid WebSocket address (ws:// or wss://)');
+    return;
+  } else {
+    signallingManager = new SignallingManager(peerConn, socketUrl, operator, 'receiver')
+  }
+  
+  if (signallingManager != null && signallingManager.webSocket) {
+    signallingManager.webSocket.addEventListener("open", () => {
+        joinCallButton.disabled = false;
+    })
+    
+    signallingManager.webSocket.addEventListener("error", () => {
+        joinCallButton.disabled = true;
+        })
+    }
+    signallingManager.webSocket.addEventListener("close", () => {
+        joinCallButton.disabled = true;
+    })
 });
