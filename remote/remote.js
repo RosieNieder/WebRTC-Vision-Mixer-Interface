@@ -22,6 +22,7 @@ let commsStreamConstraints;
 //----------------get HTML UI elements-------------
 //menus
 const commsAudioInputMenu = document.getElementById("comms-audio-input-select");
+const audioOutputMenu = document.getElementById("comms-audio-output-select");
 
 //buttons
 const joinCallButton = document.getElementById('join-call-button');
@@ -71,6 +72,7 @@ await init();
 
 if (deviceManager.devicePermissions) {
     deviceManager.addMenu(commsAudioInputMenu, 'audioinput', 'comms')
+    deviceManager.addMenu(audioOutputMenu, 'audiooutput')
     initialiseCall();
 }
 
@@ -114,6 +116,10 @@ function updateMonitor() {
         }
     })
     
+}
+
+audioOutputMenu.onchange = () => {
+    deviceManager.setAudioOutput(audioOutputMenu, pgmAudioMonitor);
 }
 
 updateMonitorButton.onclick = () => {

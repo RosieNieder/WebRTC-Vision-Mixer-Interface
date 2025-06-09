@@ -1,7 +1,3 @@
-/* TODO: Add Websocket address input field
-* attach remote comms monitor to incoming stream
-
-*/
 //---------------------LOCAL NODE-----------------
 import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
