@@ -22,7 +22,7 @@ export class SignallingManager {
 
         this.webSocket.addEventListener('error', (err) => {
             console.log('WebSocket Error: ', err.err);
-            this.webSocket.close;
+            this.webSocket.close();
             this.socketOpen = false;
         })
         this.webSocket.addEventListener('close', () => {
@@ -147,11 +147,17 @@ export class SignallingManager {
 
     cleanUp() {
         if (this.peerConn) {
+       
+            this.peerConn.ontrack = null;
+            this.peerConn.onicecandidate = null;
+
             this.peerConn.getSenders().forEach(sender => {
                 if (sender.track) sender.track.stop(); // Stop sending media
             });
+
             this.peerConn.close();
-            this.peerConn = new RTCPeerConnection;
+            this.peerConn = null;
+            // console.log(this.peerConn);
         }
     }
 

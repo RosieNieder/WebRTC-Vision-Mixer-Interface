@@ -3,6 +3,7 @@ import { StreamManager } from '../Modules/StreamManager.js';
 import { DeviceManager } from '../Modules/DeviceManager.js';
 import { SignallingManager } from '../Modules/SignallingManager.js';
 
+
 let operator = "vision-mixer";
 let webSocketAddress = null;
 const peerConn = new RTCPeerConnection;
@@ -28,6 +29,7 @@ const startCallButton = document.getElementById('start-call-button');
 startCallButton.disabled = true;
 const inspectButton = document.getElementById('inspect-button');
 const updateMonitorButton = document.getElementById('update-monitors-button');
+const hangUpCallButton = document.getElementById('hang-up-call-button');
 
 
 //monitors
@@ -63,9 +65,6 @@ function initialiseStreams() {
     }).catch (err => {
         console.error("Failed to create and attach stream to monitors: ", err);
     })
-
-
-
 }
 
 function inspection(){
@@ -82,7 +81,6 @@ function inspection(){
             
         });
     });
-    
 }
 
 function updateMonitor() {
@@ -152,6 +150,11 @@ commsAudioInputMenu.onchange = () => {
     })
 }
 
+hangUpCallButton.onclick = () => {
+    console.log("hanging up call");
+    signallingManager.hangUp();
+
+}
 updateMonitorButton.onclick = () => {
     console.log("Updating monitor")
     updateMonitor();
@@ -164,6 +167,9 @@ inspectButton.onclick = () => {
 }
 
 startCallButton.onclick = () => {
+if (!signallingManager.peerConn){
+    signallingManager.peerConn = new RTCPeerConnection;
+}
     signallingManager.sendUser();
     signallingManager.createAndSendOffer();
 }

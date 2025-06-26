@@ -170,5 +170,4 @@ connectButton.addEventListener('click', () => {
 hangUpCallButton.onclick = () => {
     signallingManager.hangUp();
     console.log("Hanging Up")
-
 }

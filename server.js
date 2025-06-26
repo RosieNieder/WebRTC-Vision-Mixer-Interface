@@ -91,7 +91,7 @@ webSocket.on('request', (req) => {
                 console.log("hang-up detected, relaying to clients")
                 sendData({
                     type: "hang_up"
-                }, user.conn)
+                }, connection)
         }
     })
 
