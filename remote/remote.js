@@ -115,7 +115,6 @@ function updateMonitor() {
             remoteCommsMonitor.srcObject = stream;
         }
     })
-    
 }
 
 audioOutputMenu.onchange = () => {
