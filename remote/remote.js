@@ -154,14 +154,17 @@ connectButton.addEventListener('click', () => {
   if (signallingManager != null && signallingManager.webSocket) {
     signallingManager.webSocket.addEventListener("open", () => {
         joinCallButton.disabled = false;
+        signallingManager.updateStatus('connected');
     })
     
     signallingManager.webSocket.addEventListener("error", () => {
         joinCallButton.disabled = true;
+        signallingManager.updateStatus('error');
         })
     }
     signallingManager.webSocket.addEventListener("close", () => {
         joinCallButton.disabled = true;
+        signallingManager.updateStatus('disconnected');
     })
 });
 

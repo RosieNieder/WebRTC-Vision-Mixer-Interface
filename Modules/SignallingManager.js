@@ -9,27 +9,31 @@ export class SignallingManager {
         this.incomingStreams ={};
         this.type = type;
         this.socketOpen = false;
+        this.updateStatus = this.updateStatus.bind(this);
 
         this.webSocket.onmessage = (event) => {
 			console.log("Handling Signalling Data: ", JSON.parse(event.data));
             this.handleSignallingData(JSON.parse(event.data));
+            
         };
 
         this.webSocket.addEventListener('open', (event) => {
             console.log('WebSocket Connection Success')
             this.socketOpen = true;
+            
         })
 
         this.webSocket.addEventListener('error', (err) => {
             console.log('WebSocket Error: ', err.err);
             this.webSocket.close();
             this.socketOpen = false;
+            
         })
         this.webSocket.addEventListener('close', () => {
             console.log('WebSocket Closed');
             setLocalDescription()
-            
             this.socketOpen = false;
+            
         })
 
         this.peerConn.onicecandidate = (e) => {
@@ -204,6 +208,28 @@ export class SignallingManager {
         console.log("Local description ", this.peerConn.localDescription);
         console.log("Remote description: ", this.peerConn.remoteDescription);
     }
+
+    updateStatus(state) {
+    const statusBox = document.getElementById("ws-status");
+    if (!statusBox) return;
+
+    statusBox.classList.remove("connected", "disconnected", "error");
+
+    switch (state) {
+        case "connected":
+            statusBox.classList.add("connected");
+            statusBox.textContent = "WebSocket: Connected";
+            break;
+        case "disconnected":
+            statusBox.classList.add("disconnected");
+            statusBox.textContent = "WebSocket: Disconnected";
+            break;
+        case "error":
+            statusBox.classList.add("error");
+            statusBox.textContent = "WebSocket: Error";
+            break;
+    }
+}
 
 }
 

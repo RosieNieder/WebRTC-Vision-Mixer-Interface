@@ -103,3 +103,23 @@ h1 {
 .input button:disabled {
   background: grey;
 }
+
+.ws-status {
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.ws-status.connected {
+  background-color: green;
+}
+
+.ws-status.disconnected {
+  background-color: red;
+}
+
+.ws-status.error {
+  background-color: orange;
+}

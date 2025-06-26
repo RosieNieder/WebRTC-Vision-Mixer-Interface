@@ -191,14 +191,17 @@ document.getElementById('connect-button').addEventListener('click', () => {
   if (signallingManager != null && signallingManager.webSocket) {
     signallingManager.webSocket.addEventListener("open", () => {
         startCallButton.disabled = false;
+        signallingManager.updateStatus('connected');
     })
     
     signallingManager.webSocket.addEventListener("error", () => {
         startCallButton.disabled = true;
+        signallingManager.updateStatus('error');
         })
     }
     signallingManager.webSocket.addEventListener("close", () => {
         startCallButton.disabled = true;
+        signallingManager.updateStatus('disconnected');
     })
 });
 
