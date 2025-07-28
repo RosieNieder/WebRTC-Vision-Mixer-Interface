@@ -40,6 +40,14 @@ export class StreamManager {
         return this.streams[streamId] || null;
     }
 
+    changeStreamBandwidth(peerConn) {
+        console.log("Changing Stream bandwidth")
+        const sender = peerConn.getSenders()[1];
+        const parameters = sender.getParameters();
+        console.log(parameters)
+        parameters.encodings[0].maxBitrate =  60*1000 * 100; // Video stream at 10Mbps
+        sender.setParameters(parameters)
+    }
 
     /** Attaches a given stream to a given peerConnection, if the stream exists, tracks are replaced if the device has changed
      * 
@@ -95,6 +103,7 @@ export class StreamManager {
             })
         }
         console.log(peerConn.getSenders())
+        this.changeStreamBandwidth(peerConn);
     }
     
     routeStreamToElement(streamId, element) {

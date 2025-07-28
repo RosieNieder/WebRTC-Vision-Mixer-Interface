@@ -56,7 +56,6 @@ export class DeviceManager {
 			console.error(err);
 			return false;
 		}
-	
 	}
 
 	//gets list of currenlty connected devices
