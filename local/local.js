@@ -6,7 +6,11 @@ import { SignallingManager } from '../Modules/SignallingManager.js';
 
 let operator = "vision-mixer";
 let webSocketAddress = null;
-const peerConn = new RTCPeerConnection;
+
+
+const peerConn = new RTCPeerConnection();
+
+
 
 //create managers
 const streamManager = new StreamManager();
@@ -74,7 +78,7 @@ function inspection(){
     console.log("comms constraints: ", commsStreamConstraints);
     console.log("programme stream: ", streamManager.streams['programme']);
     console.log("comms stream: ", streamManager.streams['comms']);
-    
+    console.log(peerConn)
     peerConn.getStats(null).then(stats => {
   stats.forEach(report => { 
     if (report.type === "codec") {

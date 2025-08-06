@@ -45,8 +45,10 @@ export class StreamManager {
         const sender = peerConn.getSenders()[1];
         const parameters = sender.getParameters();
         console.log(parameters)
-        parameters.encodings[0].maxBitrate =  60*1000 * 100; // Video stream at 10Mbps
+        parameters.encodings[0].maxBitrate =  60*1000 * 100; // Video stream at 6 Mbps
+        parameters.encodings[0].scaleResolutionDownBy = 1;
         sender.setParameters(parameters)
+        console.log(sender.parameters)
     }
 
     /** Attaches a given stream to a given peerConnection, if the stream exists, tracks are replaced if the device has changed
